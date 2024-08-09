@@ -17,31 +17,30 @@ async function createAider() {
 
     let aiderCommandLine: string = 'aider --model ' + llmModel;
 
-    let envVars: { [key: string]: string } = {};
+    let envVars: { [key: string]: string | null | undefined } = {};
     if (llmModel?.startsWith("azure")) {
         let azureApiKey: string | null | undefined = config.get('azureApiKey');
         let azureApiVersion: string | null | undefined = config.get('azureApiVersion');
         let azureApiBase: string | null | undefined = config.get('azureApiBase');
         envVars = {
-            'AZURE_API_KEY': azureApiKey ?? '',
-            'AZURE_API_VERSION': azureApiVersion ?? '',
-            'AZURE_API_BASE': azureApiBase ?? ''
+            'AZURE_API_KEY': azureApiKey,
+            'AZURE_API_VERSION': azureApiVersion,
+            'AZURE_API_BASE': azureApiBase
         };
     } else if (llmModel?.startsWith("bedrock")) {
         let awsAccessKeyId: string | null | undefined = config.get('awsAccessKeyId');
         let awsSecretAccessKey: string | null | undefined = config.get('awsSecretAccessKey');
         let awsRegionName: string | null | undefined = config.get('awsRegionName');
         envVars = {
-            'AWS_ACCESS_KEY_ID': awsAccessKeyId ?? '',
-            'AWS_SECRET_ACCESS_KEY': awsSecretAccessKey ?? '',
-            'AWS_REGION_NAME': awsRegionName ?? ''
+            'AWS_ACCESS_KEY_ID': awsAccessKeyId,
+            'AWS_SECRET_ACCESS_KEY': awsSecretAccessKey,
+            'AWS_REGION_NAME': awsRegionName
         };
     } else {
         let openaiApiKey: string | null | undefined = config.get('openaiApiKey');
         envVars = {
-            'OPENAI_API_KEY': openaiApiKey ?? ''
+            'OPENAI_API_KEY': openaiApiKey
         };
-        aiderCommandLine = 'OPENAI_API_KEY=' + openaiApiKey + ' aider --model ' + llmModel;
     }
 
     let workingDirectory: string | undefined = config.get('workingDirectory');

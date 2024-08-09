@@ -17,7 +17,7 @@ export class AiderTerminal implements AiderInterface {
     _workingDirectory: string = '';
     _onDidCloseTerminal: () => void;
 
-    constructor(envVars: { [key: string]: string }, aiderCommand: string, onDidCloseTerminal: () => void, workingDirectory: string) {
+    constructor(envVars: { [key: string]: string | null | undefined }, aiderCommand: string, onDidCloseTerminal: () => void, workingDirectory: string) {
         this._workingDirectory = workingDirectory;
 
         let opts: vscode.TerminalOptions = {
