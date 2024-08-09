@@ -1,5 +1,6 @@
 import { findWorkingDirectory } from '../extension';
 import * as vscode from 'vscode';
+import 'jest';
 //import * as fs from 'fs';
 let fs = require('fs');
 let path = require('path');

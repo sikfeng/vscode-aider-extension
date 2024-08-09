@@ -1,0 +1,103 @@
+{
+  "name": "aider",
+  "displayName": "Aider",
+  "description": "VSCode extension for running Aider",
+  "icon": "images/AiderExtension.png",
+  "version": "0.0.10",
+  "publisher": "sikfeng",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sikfeng/vscode-aider-extension"
+  },
+  "engines": {
+    "vscode": "^1.50.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Aider",
+      "properties": {
+        "aider.ignoreFiles": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "List of regexes that match filenames that won't automatically be added to the Aider terminal process."
+        },
+        "aider.openaiApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "OpenAI API Key."
+        },
+        "aider.commandLine": {
+          "type": "string",
+          "default": "aider",
+          "description": "Set that command to run aider.  This can be a path to a binary or a command that is available on the path.  You may also include parameters to aider."
+        },
+        "aider.workingDirectory": {
+          "type": "string",
+          "default": "",
+          "description": "Set the working directory for Aider. Leave empty to use the workspace root or the directory of the active file."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "aider.add",
+        "title": "Add File to Aider"
+      },
+      {
+        "command": "aider.drop",
+        "title": "Drop File from Aider"
+      },
+      {
+        "command": "aider.syncFiles",
+        "title": "Sync Open Files to Aider"
+      },
+      {
+        "command": "aider.debugInfo",
+        "title": "Aider Debug Info"
+      },
+      {
+        "command": "aider.open",
+        "title": "Open Aider"
+      },
+      {
+        "command": "aider.close",
+        "title": "Close Aider"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && npm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.14.14",
+    "@types/vscode": "^1.50.0",
+    "@typescript-eslint/eslint-plugin": "^7.14.1",
+    "@typescript-eslint/parser": "^7.11.0",
+    "@vscode/test-cli": "^0.0.9",
+    "@vscode/test-electron": "^2.4.0",
+    "esbuild": "^0.21.5",
+    "eslint": "^8.57.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.4.5"
+  }
+}
