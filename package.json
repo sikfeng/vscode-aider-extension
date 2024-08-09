@@ -2,7 +2,7 @@
   "name": "aider",
   "displayName": "Aider",
   "description": "VSCode extension for running Aider",
-  "icon": "images/AiderExtension.png",
+  "icon": "images/aider-square.jpg",
   "version": "0.0.10",
   "publisher": "sikfeng",
   "repository": {
