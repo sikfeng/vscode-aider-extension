@@ -16,6 +16,7 @@ async function createAider() {
     let llmModel: string = config.get('llmModel') ?? 'gpt-4o';
 
     let aiderCommandLine: string = 'aider --model ' + llmModel;
+    aiderCommandLine += '; exit';
 
     let envVars: { [key: string]: string | null | undefined } = {};
     if (llmModel?.startsWith("azure")) {
