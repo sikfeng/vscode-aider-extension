@@ -29,15 +29,54 @@
           },
           "description": "List of regexes that match filenames that won't automatically be added to the Aider terminal process."
         },
+        "aider.llmModel": {
+          "type": "string",
+          "default": "azure/gpt-4o",
+          "enum": [
+            "gpt-4o",
+            "azure/gpt-4o",
+            "bedrock/anthropic.claude-3-sonnet-20240229-v1:0",
+            "bedrock/anthropic.claude-3-opus-20240229-v1:0",
+            "bedrock/meta.llama3-1-405b-instruct-v1:0",
+            "bedrock/mistral.mistral-large-2402-v1:0",
+            "bedrock/mistral.mistral-large-2407-v1:0"
+          ],
+          "description": "LLM model to use."
+        },
         "aider.openaiApiKey": {
           "type": "string",
           "default": "",
           "description": "OpenAI API Key."
         },
-        "aider.commandLine": {
+        "aider.azureApiKey": {
           "type": "string",
-          "default": "aider",
-          "description": "Set that command to run aider.  This can be a path to a binary or a command that is available on the path.  You may also include parameters to aider."
+          "default": "",
+          "description": "Azure OpenAI API Key."
+        },
+        "aider.azureApiVersion": {
+          "type": "string",
+          "default": "",
+          "description": "Azure OpenAI API Version."
+        },
+        "aider.azureApiBase": {
+          "type": "string",
+          "default": "",
+          "description": "Azure OpenAI API Base."
+        },
+        "aider.awsAccessKeyId": {
+          "type": "string",
+          "default": "",
+          "description": "AWS Bedrock Access Key ID."
+        },
+        "aider.awsSecretAccessKey": {
+          "type": "string",
+          "default": "",
+          "description": "AWS Bedrock Secret Access Key."
+        },
+        "aider.awsRegionName": {
+          "type": "string",
+          "default": "",
+          "description": "AWS Region Name."
         },
         "aider.workingDirectory": {
           "type": "string",

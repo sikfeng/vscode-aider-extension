@@ -17,7 +17,7 @@ export class AiderTerminal implements AiderInterface {
     _workingDirectory: string = '';
     _onDidCloseTerminal: () => void;
 
-    constructor(openaiAPIKey: string | null | undefined, aiderCommand: string, onDidCloseTerminal: () => void, workingDirectory: string) {
+    constructor(envVars: { [key: string]: string}, aiderCommand: string, onDidCloseTerminal: () => void, workingDirectory: string) {
         this._workingDirectory = workingDirectory;
 
         let opts: vscode.TerminalOptions = {
@@ -25,8 +25,8 @@ export class AiderTerminal implements AiderInterface {
             'cwd': this._workingDirectory,
         };
 
-        if (openaiAPIKey) {
-            opts['env'] = { "OPENAI_API_KEY": openaiAPIKey };
+        if (envVars) {
+            opts['env'] = envVars;
         }
 
         if (process.platform === 'win32') {

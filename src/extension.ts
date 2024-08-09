@@ -10,15 +10,45 @@ let calculatedWorkingDirectory: string | undefined = undefined;
 /**
  * Create the Aider interface (currently a terminal) and start it.
  */
-async function createAider() { 
+async function createAider() {
     const config = vscode.workspace.getConfiguration('aider');
-    let openaiApiKey: string | null | undefined = config.get('openaiApiKey');
-    let aiderCommandLine: string = config.get('commandLine') ?? 'aider';
+
+    let llmModel: string = config.get('llmModel') ?? 'gpt-4o';
+
+    let aiderCommandLine: string = 'aider --model ' + llmModel;
+
+    let envVars: { [key: string]: string } = {};
+    if (llmModel?.startsWith("azure")) {
+        let azureApiKey: string | null | undefined = config.get('azureApiKey');
+        let azureApiVersion: string | null | undefined = config.get('azureApiVersion');
+        let azureApiBase: string | null | undefined = config.get('azureApiBase');
+        envVars = {
+            'AZURE_API_KEY': azureApiKey ?? '',
+            'AZURE_API_VERSION': azureApiVersion ?? '',
+            'AZURE_API_BASE': azureApiBase ?? ''
+        };
+    } else if (llmModel?.startsWith("bedrock")) {
+        let awsAccessKeyId: string | null | undefined = config.get('awsAccessKeyId');
+        let awsSecretAccessKey: string | null | undefined = config.get('awsSecretAccessKey');
+        let awsRegionName: string | null | undefined = config.get('awsRegionName');
+        envVars = {
+            'AWS_ACCESS_KEY_ID': awsAccessKeyId ?? '',
+            'AWS_SECRET_ACCESS_KEY': awsSecretAccessKey ?? '',
+            'AWS_REGION_NAME': awsRegionName ?? ''
+        };
+    } else {
+        let openaiApiKey: string | null | undefined = config.get('openaiApiKey');
+        envVars = {
+            'OPENAI_API_KEY': openaiApiKey ?? ''
+        };
+        aiderCommandLine = 'OPENAI_API_KEY=' + openaiApiKey + ' aider --model ' + llmModel;
+    }
+
     let workingDirectory: string | undefined = config.get('workingDirectory');
 
     findWorkingDirectory(workingDirectory).then((workingDirectory) => {
         calculatedWorkingDirectory = workingDirectory;
-        aider = new AiderTerminal(openaiApiKey, aiderCommandLine, handleAiderClose, workingDirectory);
+        aider = new AiderTerminal(envVars, aiderCommandLine, handleAiderClose, workingDirectory);
         syncAiderAndVSCodeFiles();
         aider.show();
     }).catch((err) => {
@@ -51,10 +81,10 @@ function syncAiderAndVSCodeFiles() {
 
     let opened = [...filesThatVSCodeKnows].filter(x => !filesThatAiderKnows.has(x));
     let closed = [...filesThatAiderKnows].filter(x => !filesThatVSCodeKnows.has(x));
-    
+
     let ignoreFiles = vscode.workspace.getConfiguration('aider').get('ignoreFiles') as string[];
     let ignoreFilesRegex = ignoreFiles.map((regex) => new RegExp(regex));
-    
+
     opened = opened.filter((item) => !ignoreFilesRegex.some((regex) => regex.test(item)));
     aider?.addFiles(opened);
 
@@ -77,15 +107,15 @@ export async function findWorkingDirectory(overridePath?: string): Promise<strin
     if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 1) {
         let items: vscode.QuickPickItem[] = [];
         for (let workspaceFolder of vscode.workspace.workspaceFolders) {
-            items.push({label: workspaceFolder.name, description: workspaceFolder.uri.fsPath});
+            items.push({ label: workspaceFolder.name, description: workspaceFolder.uri.fsPath });
         }
-        items.push({label: "Select a folder...", description: ""});
+        items.push({ label: "Select a folder...", description: "" });
 
-        let workspaceThen = vscode.window.showQuickPick(items, {placeHolder: "Select a folder to use with Aider"});
+        let workspaceThen = vscode.window.showQuickPick(items, { placeHolder: "Select a folder to use with Aider" });
         let workspace = await workspaceThen;
         if (workspace) {
             if (workspace.label === "Select a folder...") {
-                let otherFolderThen = vscode.window.showOpenDialog({canSelectFiles: false, canSelectFolders: true, canSelectMany: false});
+                let otherFolderThen = vscode.window.showOpenDialog({ canSelectFiles: false, canSelectFolders: true, canSelectMany: false });
                 let otherFolder = await otherFolderThen;
                 if (otherFolder) {
                     return findGitDirectoryInSelfOrParents(otherFolder[0].fsPath);
@@ -108,7 +138,7 @@ export async function findWorkingDirectory(overridePath?: string): Promise<strin
         filePath = components.join("/");
         return findGitDirectoryInSelfOrParents(filePath);
     } else {
-        let otherFolderThen = vscode.window.showOpenDialog({canSelectFiles: false, canSelectFolders: true, canSelectMany: false});
+        let otherFolderThen = vscode.window.showOpenDialog({ canSelectFiles: false, canSelectFolders: true, canSelectMany: false });
         let otherFolder = await otherFolderThen;
         if (otherFolder) {
             return findGitDirectoryInSelfOrParents(otherFolder[0].fsPath);
@@ -119,7 +149,7 @@ export async function findWorkingDirectory(overridePath?: string): Promise<strin
 }
 
 function findGitDirectoryInSelfOrParents(filePath: string): string {
-    let dirs: string[] = filePath.split(path.sep).filter((item) => { return item !== ""});
+    let dirs: string[] = filePath.split(path.sep).filter((item) => { return item !== "" });
     while (dirs.length > 0) {
         try {
             let isWin = path.sep === "\\";
@@ -138,7 +168,7 @@ function findGitDirectoryInSelfOrParents(filePath: string): string {
             } else {
                 dirs.pop();
             }
-        } catch(err) {
+        } catch (err) {
             dirs.pop();
         }
     }
@@ -160,7 +190,7 @@ vscode.workspace.onDidChangeConfiguration((e) => {
 
         // Restart the Aider terminal with the new API key
         createAider();
-        
+
         // Add all currently open files
         syncAiderAndVSCodeFiles();
     }
@@ -260,7 +290,7 @@ export function activate(context: vscode.ExtensionContext) {
             aider.dropFile(filePath);
         }
     });
-    
+
     context.subscriptions.push(disposable);
 
     disposable = vscode.commands.registerCommand('aider.syncFiles', function () {
@@ -303,4 +333,4 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 }
 
-export function deactivate() {}
+export function deactivate() { }
