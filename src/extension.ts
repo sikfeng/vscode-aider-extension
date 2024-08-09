@@ -127,7 +127,7 @@ export async function findWorkingDirectory(overridePath?: string): Promise<strin
         } else {
             throw new Error("Starting Aider requires a workspace folder.  Aborting...");
         }
-    } else if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length == 1) {
+    } else if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length === 1) {
         let workspaceFolder = vscode.workspace.workspaceFolders[0];
         return findGitDirectoryInSelfOrParents(workspaceFolder.uri.fsPath);
     } else if (vscode.window.activeTextEditor?.document?.fileName) {
@@ -148,7 +148,7 @@ export async function findWorkingDirectory(overridePath?: string): Promise<strin
 }
 
 function findGitDirectoryInSelfOrParents(filePath: string): string {
-    let dirs: string[] = filePath.split(path.sep).filter((item) => { return item !== "" });
+    let dirs: string[] = filePath.split(path.sep).filter((item) => { return item !== ""; });
     while (dirs.length > 0) {
         try {
             let isWin = path.sep === "\\";
@@ -248,7 +248,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 
     disposable = vscode.commands.registerCommand('aider.debugInfo', function () {
-        console.log(`===============================`)
+        console.log(`===============================`);
         console.log(`Working directory: ${calculatedWorkingDirectory}`);
         console.log(`Config working directory: ${vscode.workspace.getConfiguration('aider').get('workingDirectory')}`);
         console.log(`Files that aider knows about:`);
@@ -264,11 +264,11 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.visibleTextEditors.forEach((editor) => {
             console.log(`  ${editor.document.fileName}`);
         });
-        console.log(`===============================`)
+        console.log(`===============================`);
         vscode.window.showInformationMessage("Open Help->Toggle Developer Tools to see debug info in the 'Console' tab.");
     });
 
-    context.subscriptions.push(disposable)
+    context.subscriptions.push(disposable);
 
     disposable = vscode.commands.registerCommand('aider.drop', function () {
         if (!aider) {
