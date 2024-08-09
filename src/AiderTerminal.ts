@@ -2,13 +2,13 @@ import * as vscode from 'vscode';
 
 
 export interface AiderInterface {
-    addFile(filePath: string) : void;
-    addFiles(filePaths: string[]) : void;
-    dispose() : void;
-    dropFile(filePath: string) : void;
-    dropFiles(filePaths: string[]) : void;
-    isWorkspaceFile(filePath: string) : boolean;
-    sendCommand(command: string) : void;    
+    addFile(filePath: string): void;
+    addFiles(filePaths: string[]): void;
+    dispose(): void;
+    dropFile(filePath: string): void;
+    dropFiles(filePaths: string[]): void;
+    isWorkspaceFile(filePath: string): boolean;
+    sendCommand(command: string): void;
     show(): void;
 }
 
@@ -17,7 +17,7 @@ export class AiderTerminal implements AiderInterface {
     _workingDirectory: string = '';
     _onDidCloseTerminal: () => void;
 
-    constructor(envVars: { [key: string]: string}, aiderCommand: string, onDidCloseTerminal: () => void, workingDirectory: string) {
+    constructor(envVars: { [key: string]: string }, aiderCommand: string, onDidCloseTerminal: () => void, workingDirectory: string) {
         this._workingDirectory = workingDirectory;
 
         let opts: vscode.TerminalOptions = {
@@ -55,11 +55,11 @@ export class AiderTerminal implements AiderInterface {
         return filePath.substring(this._workingDirectory.length);
     }
 
-    addFile(filePath: string) : void {
+    addFile(filePath: string): void {
         this._terminal.sendText(`/add ${this.getRelativeDirectory(filePath)}`);
     }
 
-    addFiles(filePaths: string[]) : void {
+    addFiles(filePaths: string[]): void {
         if (filePaths.length === 0) {
             return;
         }
@@ -67,11 +67,11 @@ export class AiderTerminal implements AiderInterface {
         this._terminal.sendText(`/add ${filePaths.map((filePath) => this.getRelativeDirectory(filePath)).join(' ')}`);
     }
 
-    dropFile(filePath: string) : void {
+    dropFile(filePath: string): void {
         this._terminal.sendText(`/drop ${this.getRelativeDirectory(filePath)}`);
     }
 
-    dropFiles(filePaths: string[]) : void {
+    dropFiles(filePaths: string[]): void {
         if (filePaths.length === 0) {
             return;
         }
@@ -79,16 +79,16 @@ export class AiderTerminal implements AiderInterface {
         this._terminal.sendText(`/drop ${filePaths.map((filePath) => this.getRelativeDirectory(filePath)).join(' ')}`);
     }
 
-    dispose() : void {
+    dispose(): void {
         this._terminal.sendText("/exit");
         this._terminal.dispose();
     }
 
-    isWorkspaceFile(filePath: string) : boolean {
+    isWorkspaceFile(filePath: string): boolean {
         return filePath.startsWith(this._workingDirectory);
     }
 
-    sendCommand(command: string) : void {
+    sendCommand(command: string): void {
         this._terminal.sendText(command);
     }
 
